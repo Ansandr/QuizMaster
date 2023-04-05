@@ -1,0 +1,9 @@
+name: SocialQuizzes
+main: fun.socialcraft.quiz.QuizPlugin
+version: 1.0.0
+depend:
+  - ProtocolLib
+
+commands:
+  startquiz:
+  answer:

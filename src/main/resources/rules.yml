@@ -1,0 +1,31 @@
+title: 'Тест на знание правил'
+description: 'Несколько вопросов на то как хорошо ты знаешь правила'
+pass-score: 1
+
+# Команды выполняет при успешном завершении
+command:
+  success:
+    - 'tell {player} Поздравляем вы молодец'
+    - 'give {player} diamond'
+  fail:
+    - 'tell {player} Тест провален'
+    - 'execute at {player} run summon lightning_bolt'
+questions:
+  '1':
+    question: '<yellow>Гриферить хорошо</yellow><gold>?</gold>'
+    options:
+      '1':
+        text: 'Да'
+        is_correct: false # false по умолчанию. Можно не указывать
+      '2':
+        text: 'Нет'
+        is_correct: true
+  '2':
+    question: '<yellow>Я нашел чужие вещи что я сделаю</yellow>'
+    options:
+      '1':
+        text: 'Заберу их себе'
+      '2':
+        text: 'Отдам владельцу'
+        is_correct: true
+
