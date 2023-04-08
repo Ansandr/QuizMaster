@@ -6,21 +6,23 @@ import fun.socialcraft.quiz.model.Quiz;
 import fun.socialcraft.quiz.model.QuizHandler;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.logging.Logger;
 
 import static fun.socialcraft.quiz.utils.AdventureUtil.formatAdventure;
 
 public class QuizManager {
 
     private final Configurations configurations;
-    private final ArrayList<Quiz> quizzes = new ArrayList<>();
+    private final Logger log;
+    private final ArrayList<Quiz> quizzes;
     private final Map<UUID, QuizHandler> runningQuizzes = new HashMap<>();
 
-    public QuizManager(Configurations storage) {
-        this.configurations = storage;
+    public QuizManager(QuizPlugin plugin) {
+        this.configurations = plugin.getQuizConfigs();
+        this.log = plugin.getLogger();
+
+        quizzes = new ArrayList<>();
         loadQuizzes();
     }
 
@@ -28,7 +30,12 @@ public class QuizManager {
         for (String configName : configurations.getConfigurationsNames()) {
             QuizConfiguration quizConfig = new QuizConfiguration(configurations.get(configName));
 
-            quizzes.add(quizConfig.loadQuiz());
+            try {
+                quizzes.add(quizConfig.loadQuiz());
+            } catch (NullPointerException ex) {
+                log.warning(quizConfig.getFileName() + " отсутвует содержаение. Файл пустой");
+            }
+
         }
     }
 
@@ -68,5 +75,9 @@ public class QuizManager {
 
     public QuizHandler getQuizHandler(UUID uniqueId) {
         return runningQuizzes.get(uniqueId);
+    }
+
+    public List<Quiz> getQuizList() {
+        return quizzes;
     }
 }

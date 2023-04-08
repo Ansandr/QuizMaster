@@ -13,7 +13,7 @@ import java.util.List;
 
 public class QuizConfiguration {
 
-    private YamlDocument config;
+    private final YamlDocument config;
 
 
     public QuizConfiguration(YamlDocument quizConfiguration) {
@@ -28,9 +28,11 @@ public class QuizConfiguration {
         return config.getString("description");
     }
 
-    public List<Question> readQuestions() {
+    public List<Question> readQuestions() throws NullPointerException {
         Section questionSection = config.getSection("questions");
-
+        if (questionSection == null) {
+            throw new NullPointerException();
+        }
         List<Question> questions = new ArrayList<>();
 
         for (Route questionRoute : questionSection.getRoutes(false)) {
@@ -63,7 +65,7 @@ public class QuizConfiguration {
         return config.getInt("pass-score");
     }
 
-    public Quiz loadQuiz() {
+    public Quiz loadQuiz() throws NullPointerException {
         return new Quiz(
                 Files.getNameWithoutExtension(config.getFile().getName()),
                 getTitle(),
@@ -73,5 +75,9 @@ public class QuizConfiguration {
                 readQuestions(),
                 getPassingScore()
         );
+    }
+
+    public String getFileName() {
+        return config.getFile().getName();
     }
 }

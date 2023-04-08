@@ -2,8 +2,8 @@ package fun.socialcraft.quiz.model;
 
 public class Answer {
 
-    private Question question;
-    private int answerIndex;
+    private final Question question;
+    private final int answerIndex;
 
     public Answer(Question question, int answerIndex) {
         this.question = question;
@@ -11,6 +11,7 @@ public class Answer {
     }
 
     public boolean isCorrect() {
+        if (question.getOptions().size() <= answerIndex) return false;
         return question.getOptions().get(answerIndex).isCorrect;
     }
 }

@@ -6,4 +6,5 @@ depend:
 
 commands:
   startquiz:
+  quiz:
   answer:

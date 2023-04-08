@@ -13,7 +13,7 @@ import java.util.logging.Level;
 public class Configurations {
 
     private final Map<String, YamlDocument> configurations = new HashMap<>();
-    private final List<String> configurationNames;
+    private List<String> configurationNames;
 
     private final File dataFolder;
     private final Plugin plugin;
@@ -31,15 +31,13 @@ public class Configurations {
         File file = new File(folder, name);
 
         if (!file.exists()) {
-            file.getParentFile().mkdirs();
-            saveResourceToFile(name, file);
+            if (file.getParentFile().mkdirs())
+                saveResourceToFile("rules.yml", file);
         }
-
         return file;
     }
 
     public void loadConfigurations() {
-
         // create quiz example
 
         for (String configName : configurationNames) {
@@ -58,8 +56,9 @@ public class Configurations {
         }
     }
 
-    public void reloadConfigurations() {
+    public void reloadConfigurations(String... configurationNames) {
         configurations.clear();
+        this.configurationNames = Lists.newArrayList(configurationNames);
         loadConfigurations();
     }
 
@@ -88,12 +87,15 @@ public class Configurations {
     }
 
     private boolean saveResourceToFile(String resource, File file) {
-        try {
-            InputStream is = this.plugin.getResource(resource);
+        try (OutputStream os = new FileOutputStream(file);
+             InputStream is = this.plugin.getResource(resource)){
+
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
-            OutputStream os = new FileOutputStream(file);
             os.write(buffer);
+
+            os.close();
+            is.close();
             return true;
         } catch (NullPointerException|IOException ex) {
             ex.printStackTrace();

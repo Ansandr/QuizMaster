@@ -1,6 +1,13 @@
 answer-chat: false
 answer-command: true
 
+quizzes:
+  rules:
+    file: rules.yml
+  exam:
+    file: exam.yml
+
+
 locale:
   question: '<b><color:#fff3c9>{num})</color></b> {question}'
   option: '<red>{letter}</red> {option}'
