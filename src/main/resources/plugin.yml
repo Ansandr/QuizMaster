@@ -1,6 +1,6 @@
 name: QuizMaster
 main: fun.socialcraft.quiz.QuizPlugin
-version: 1.0.0
+version: 1.0.1
 depend:
   - ProtocolLib
 

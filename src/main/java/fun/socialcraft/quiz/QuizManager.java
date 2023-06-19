@@ -26,6 +26,9 @@ public class QuizManager {
         loadQuizzes();
     }
 
+    /**
+     * Загрузить викторина из файла в память
+     */
     private void loadQuizzes() {
         for (String configName : configurations.getConfigurationsNames()) {
             QuizConfiguration quizConfig = new QuizConfiguration(configurations.get(configName));
@@ -67,6 +70,10 @@ public class QuizManager {
 
     public void endQuiz(QuizHandler quiz) {
         runningQuizzes.remove(quiz.getPlayer().getUniqueId());
+    }
+
+    public QuizHandler endQuiz(UUID uniqueId) {
+        return runningQuizzes.remove(uniqueId);
     }
 
     public boolean isInQuiz(UUID uuid) {

@@ -2,6 +2,7 @@ package fun.socialcraft.quiz.config;
 
 import com.google.common.collect.Lists;
 import dev.dejvokep.boostedyaml.YamlDocument;
+import fun.socialcraft.quiz.QuizPlugin;
 import org.bukkit.plugin.Plugin;
 
 import java.io.*;
@@ -16,23 +17,29 @@ public class Configurations {
     private List<String> configurationNames;
 
     private final File dataFolder;
-    private final Plugin plugin;
+    private final QuizPlugin plugin;
 
-    public Configurations(Plugin plugin, String... configurationNames) {
+    public Configurations(QuizPlugin plugin, String... configurationNames) {
         this.plugin = plugin;
         this.configurationNames = Lists.newArrayList(configurationNames);
         this.dataFolder = new File(plugin.getDataFolder(), "quizzes");
 
+        // Проверить существует ли папка
+        if (!dataFolder.exists())
+            dataFolder.mkdirs();
+
         loadConfigurations();
     }
 
-    // Для начала нужно создать файл
-    private File generateFile(File folder, String name) {
+    // Создать файл
+    private File generateFile(File folder, String name) throws IOException {
         File file = new File(folder, name);
 
-        if (!file.exists()) {
-            if (file.getParentFile().mkdirs())
-                saveResourceToFile("rules.yml", file);
+        if (!file.exists()) { // Файла не существует
+            file.createNewFile(); // создать
+            if (!saveResourceToFile("rules.yml", file)) {// Сохранить в файл содержание по умолчанию
+                throw new IOException("Failed to create a default config for quiz: " + name + " Skipping loading quiz: " + name);
+            }
         }
         return file;
     }
@@ -41,20 +48,36 @@ public class Configurations {
         // create quiz example
 
         for (String configName : configurationNames) {
-            if (this.configurations.containsKey(configName)) continue; // Пропускаем если есть
-
-            File configFile = generateFile(dataFolder, configName); // создаем файл
+            if (this.configurations.containsKey(configName)) continue; // Пропускаем если объект конфига уже создан
 
             try {
-                YamlDocument config = YamlDocument.create(configFile);
-
-                configurations.put(configName, config);
+                configurations.put(configName, loadConfiguration(configName));
             } catch (IOException e) {
-                e.printStackTrace();
+                plugin.debug(Level.WARNING, e.getMessage());
             }
-
         }
     }
+
+    public YamlDocument loadConfiguration(String quizFileName) throws IOException {
+        //Проверка формата
+        if (!quizFileName.endsWith(".yml")) {
+            plugin.debug(Level.INFO, "Filename specified for quiz: " + quizFileName + " is not a .yml file!");
+        }
+
+        File configFile = generateFile(dataFolder, quizFileName); // Создать файл
+        YamlDocument config = YamlDocument.create(configFile); /// Создать конфигурацию
+
+        // Если файл пустой
+        config.getKeys();
+        if (config.getKeys().isEmpty()) {
+            plugin.debug(Level.INFO, "Quiz config: " + quizFileName + " is empty! Creating default config example");
+            saveResourceToFile("rules.yml", configFile); // заполнить
+            config = YamlDocument.create(configFile);
+        }
+
+        return config;
+    }
+
 
     public void reloadConfigurations(String... configurationNames) {
         configurations.clear();
@@ -87,19 +110,19 @@ public class Configurations {
     }
 
     private boolean saveResourceToFile(String resource, File file) {
-        try (OutputStream os = new FileOutputStream(file);
-             InputStream is = this.plugin.getResource(resource)){
+        try (OutputStream os = new FileOutputStream(file); // Открыть каналы чтения и записи
+             InputStream is = this.plugin.getResource(resource)) {
 
-            byte[] buffer = new byte[is.available()];
-            is.read(buffer);
-            os.write(buffer);
+            byte[] buffer = new byte[is.available()]; // буфер для ввода
+            is.read(buffer); // Прочитать из плагина
+            os.write(buffer); // Вписать в файл
 
             os.close();
-            is.close();
+            is.close(); // закрыть
             return true;
         } catch (NullPointerException|IOException ex) {
             ex.printStackTrace();
-            plugin.getLogger().severe("Failed to save default settings for:" + file.getName() + " from resource:" + resource);
+            plugin.debug(Level.SEVERE, "Failed to save default settings for:" + file.getName() + " from resource:" + resource);
             return false;
         }
     }

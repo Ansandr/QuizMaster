@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -34,6 +35,19 @@ public class QuizHandler {
 
         results = new ArrayList<>();
         current = 0;
+
+        // создаем перемешаный список с вопросами
+        List<Question> shuffleQuestions = new ArrayList<>(quiz.getQuestions());
+    }
+
+    private List<Question> generateQuestionList() {
+        return null; //TODO
+    }
+
+    private List<Option> shuffleOptions(Question question) {
+        List<Option> shuffledOptions = new ArrayList<>(question.getOptions());
+        Collections.shuffle(shuffledOptions);
+        return shuffledOptions;
     }
 
 
@@ -51,8 +65,12 @@ public class QuizHandler {
 
         p.sendMessage(formatAdventure(String.format("<b><color:#fff3c9>%1$1d)</color></b> %2$1s", number + 1, q.text)));
 
-        for (int i = 0; i < q.getOptions().size(); i++) {
-           p.sendMessage(formatAdventure(String.format("<red>%1$c</red> %2$s", getCharFromNumber(i+1), q.getOptions().get(i).text)));
+        List<Option> options = q.getOptions();
+        Collections.shuffle(options);
+        int i = 0;
+        for (Option option : options) {
+            p.sendMessage(formatAdventure(String.format("<red>%1$c</red> %2$s", getCharFromNumber(i+1), option.text)));
+            i++;
         }
     }
 

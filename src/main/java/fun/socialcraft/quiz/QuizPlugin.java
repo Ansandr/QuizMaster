@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class QuizPlugin extends JavaPlugin {
 
@@ -65,9 +66,9 @@ public class QuizPlugin extends JavaPlugin {
         ConfigurationSection section = getConfig().getConfigurationSection("quizzes");
 
         List<String> quizzes = new ArrayList<>();
-        debug("Quiz files list:");
+        debug(Level.INFO, "Loaded quiz list:");
         for (String key : section.getKeys(false)) {
-            debug(key);
+            debug(Level.INFO, key);
             quizzes.add(section.getString(key + ".file"));
         }
 
@@ -84,10 +85,10 @@ public class QuizPlugin extends JavaPlugin {
      */
     public void reloadPlugin() {
         saveDefaultConfig();
-        debug("Reloading config.yml");
+        debug(Level.INFO, "Reloading config.yml");
         reloadConfig();
 
-        debug("Reloading quiz files");
+        debug(Level.INFO, "Reloading quiz files");
         loadQuizzes();
 
         // Перезагрузить команды
@@ -98,7 +99,7 @@ public class QuizPlugin extends JavaPlugin {
         return quizConfigs;
     }
 
-    public void debug(String s) {
-        getLogger().info(s);
+    public void debug(Level level, String s) {
+        getLogger().log(level, s);
     }
 }
