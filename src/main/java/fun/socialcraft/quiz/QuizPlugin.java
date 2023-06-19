@@ -2,6 +2,7 @@ package fun.socialcraft.quiz;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import fun.socialcraft.quiz.commands.Commandanswer;
+import fun.socialcraft.quiz.commands.Commandleavequiz;
 import fun.socialcraft.quiz.commands.Commandquiz;
 import fun.socialcraft.quiz.commands.Commandstartquiz;
 import fun.socialcraft.quiz.config.Configurations;
@@ -42,6 +43,7 @@ public class QuizPlugin extends JavaPlugin {
         Commandquiz commandQuiz = new Commandquiz(this);
         getCommand("quiz").setExecutor(commandQuiz);
         getCommand("quiz").setTabCompleter(commandQuiz);
+        getCommand("leavequiz").setExecutor(new Commandleavequiz(quizManager));
     }
 
     // Слушаетль
@@ -76,13 +78,19 @@ public class QuizPlugin extends JavaPlugin {
         return quizManager;
     }
 
+    /**
+     * Перезагружает: конфиг, загружает заново викторины, заново регестрирует команды
+     *
+     */
     public void reloadPlugin() {
+        saveDefaultConfig();
         debug("Reloading config.yml");
         reloadConfig();
 
         debug("Reloading quiz files");
         loadQuizzes();
 
+        // Перезагрузить команды
         registerCommands();
     }
 
@@ -91,6 +99,6 @@ public class QuizPlugin extends JavaPlugin {
     }
 
     public void debug(String s) {
-        logger.info(s);
+        getLogger().info(s);
     }
 }

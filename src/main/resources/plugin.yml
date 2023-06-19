@@ -1,4 +1,4 @@
-name: SocialQuizzes
+name: QuizMaster
 main: fun.socialcraft.quiz.QuizPlugin
 version: 1.0.0
 depend:
@@ -8,3 +8,4 @@ commands:
   startquiz:
   quiz:
   answer:
+  leavequiz:

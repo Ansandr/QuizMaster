@@ -14,7 +14,7 @@ import java.util.List;
 public class ChatListener implements Listener {
 
     private final QuizPlugin plugin;
-    private final List<String> commands = Arrays.asList("quiz", "answer");
+    private final List<String> commands = Arrays.asList("quiz", "answer", "leavequiz");
 
     public ChatListener(QuizPlugin plugin) {
         this.plugin = plugin;
@@ -33,7 +33,7 @@ public class ChatListener implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e) {
         if (plugin.getQuizManager().isInQuiz(e.getPlayer().getUniqueId())) {
-            if (commands.contains(getCommandLabel(e.getMessage()))) return; // проверка если разрешенная команда вернуть
+            if (commands.contains(getCommandLabel(e.getMessage()))) return; // если разрешенная команда, выполнить
             e.getPlayer().sendMessage("Нельзя пользоватся командами во время теста");
             e.setCancelled(true);
         }
